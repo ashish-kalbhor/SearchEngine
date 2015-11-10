@@ -22,6 +22,7 @@ public class IndexMap extends HashMap<String, HashMap<String, Integer>>
 			int count = postingMap.get(docId);
 			postingMap.put(docId, count+1);
 		}
+				
 		return super.put(term, postingMap);
 	}	
 }

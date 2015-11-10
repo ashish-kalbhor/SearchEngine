@@ -45,8 +45,8 @@ public class Indexer
 			{
 				ArrayList<String> tokens = getTerms(line);
 				docLength.put(docId, docLength.get(docId)+tokens.size());
-				HashSet<String> uniqueTokens = new HashSet<>(tokens);
-				addPostings(docId,uniqueTokens);
+				//HashSet<String> uniqueTokens = new HashSet<>(tokens);
+				addPostings(docId,tokens);
 			}
 			
 			line = readCorpus.readLine();
@@ -103,7 +103,7 @@ public class Indexer
 	 * @param docId
 	 * @param terms
 	 */
-	public static void addPostings(String docId, HashSet<String> terms)
+	public static void addPostings(String docId, ArrayList<String> terms)
 	{
 		for(String term : terms)
 		{

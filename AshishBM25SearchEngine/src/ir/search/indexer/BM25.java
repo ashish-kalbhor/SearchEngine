@@ -1,7 +1,9 @@
 package ir.search.indexer;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,6 +30,9 @@ public class BM25
 	public static double k2 = 100.0;
 	public static double b = 0.75;
 	public static double avdl = 0;
+	
+	public static int OUTPUT_THRESHOLD = 100;
+	public static String SYSTEM_NAME = "ashish_system";
 	
 	/**
 	 * Load the Index hashmap from index file.
@@ -148,10 +153,11 @@ public class BM25
 	
 	/**
 	 * Main method to compute the doc score.
+	 * @throws IOException 
 	 */
-	public static void computeDocScore()
+	public static void computeDocScore(String resultsFilePath) throws IOException
 	{
-		//Iterator<String> docs = docScore.keySet().iterator();
+		BufferedWriter resultsFile = new BufferedWriter(new FileWriter(resultsFilePath));
 		double rankingScore = 0.0;
 		int N = docScore.size();
 		int dl = 0;
@@ -179,27 +185,30 @@ public class BM25
 				docScore.put(docId, rankingScore);
 			}
 			// DocScore for the query
-			writeTopRanked(100);
+			writeTopRanked(queryId, resultsFile);
 			docScore.clear();
 		}
-		
+		resultsFile.close();
 	}
 	
 	/**
 	 * Writes the top ranked documents.
 	 * @param top
+	 * @throws IOException 
 	 */
-	public static void writeTopRanked(int top)
+	public static void writeTopRanked(int queryId, BufferedWriter resultsFile) throws IOException
 	{
 		TreeMap<String, Double> sortedDocScore = SortByValue(docScore);
-		
 		Iterator<String> docIds = sortedDocScore.keySet().iterator();
 		
-		while(docIds.hasNext() && top > 0)
+		int top = 1;
+		
+		while(docIds.hasNext() && top <= OUTPUT_THRESHOLD)
 		{
 			String docId = docIds.next();
-			System.out.println(top + ". " + docId + "=>" + docScore.get(docId));
-			top--;
+			resultsFile.write(queryId + " Q0 " + docId + " " + top + " " + 
+			docScore.get(docId) + " " + SYSTEM_NAME + "\n");
+			top++;
 		}	
 	}
 	
@@ -227,9 +236,6 @@ public class BM25
 		score *= (double)(((k1 + 1)*fi) / (getKparam(dl)+fi));
 		score *= (double)(((k2 + 1)*qfi)/(k2 + qfi));
 		
-		if(docId.equals("1930")){
-			System.out.println(q + "=>" + qfi + "," + fi + "," + ni + "," + getKparam(dl));
-		}
 		return score;
 	}
 	
@@ -248,15 +254,15 @@ public class BM25
 	
 	public static void main(String[] args) throws IOException 
 	{
-		loadIndex("index.out");
-		loadDocLength("doclength.txt");
-		loadQueries("queries.txt");
+		String indexFileName = "index.out";
+		String docLengthFileName = "doclength.txt";
+		String queriesFileName = "queries.txt";
+		String resultsFileName = "results.eval";
+		loadIndex(indexFileName);
+		loadDocLength(docLengthFileName);
+		loadQueries(queriesFileName);
 		avdl = getAvdl();
-		System.out.println("avdl=" + avdl);
-		computeDocScore();
-		TreeMap<String, Double> sortedDocScore = SortByValue(docScore);
-		//System.out.println(queries);
-		//System.out.println(Math.log(0));
+		computeDocScore(resultsFileName);
 	}
 }
 
