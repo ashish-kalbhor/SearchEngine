@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -45,7 +44,6 @@ public class Indexer
 			{
 				ArrayList<String> tokens = getTerms(line);
 				docLength.put(docId, docLength.get(docId)+tokens.size());
-				//HashSet<String> uniqueTokens = new HashSet<>(tokens);
 				addPostings(docId,tokens);
 			}
 			
@@ -142,6 +140,11 @@ public class Indexer
 		docFile.close();
 	}
 	
+	/**
+	 * Returns a complete String of docset in appropriate format
+	 * to be written in the index file.
+	 * @param docset
+	 */
 	public static StringBuffer toFormattedText(HashMap<String, Integer> docset)
 	{
 		StringBuffer sb = new StringBuffer();
@@ -154,10 +157,26 @@ public class Indexer
 		return sb;
 	}
 	
+	/**
+	 * Main method that is executed.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException 
 	{
-		loadCorpus("tccorpus.txt");
-		createIndexFiles("index.out","doclength.txt");
+		// Default file names
+		String corpusFileName = "tccorpus.txt";
+		String indexFileName = "index.out";
+		String docLengthFileName = "doclength.txt";
+		
+		if(args.length == 2)
+		{
+			corpusFileName = args[0];
+			indexFileName = args[1];
+		}
+		
+		loadCorpus(corpusFileName);
+		createIndexFiles(indexFileName,docLengthFileName);
 	}
 
 }

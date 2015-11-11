@@ -1,9 +1,7 @@
 package ir.search.indexer;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,11 +29,12 @@ public class BM25
 	public static double b = 0.75;
 	public static double avdl = 0;
 	
+	// Constants for query output
 	public static int OUTPUT_THRESHOLD = 100;
 	public static String SYSTEM_NAME = "ashish_system";
 	
 	/**
-	 * Load the Index hashmap from index file.
+	 * Load the Index hashmap from given index file path.
 	 * @param indexFilePath
 	 * @throws IOException
 	 */
@@ -75,6 +74,13 @@ public class BM25
 		docLengthFile.close();
 	}
 	
+	/**
+	 * Splits the given docset per word and creates a posting in the form
+	 * of [docId,term-frequency].
+	 * This posting is then put in a hashmap against the word.
+	 * @param docset
+	 * @return
+	 */
 	public static HashMap<String, Integer> loadDocForWord(String docset)
 	{
 		HashMap<String, Integer> postings = new HashMap<String, Integer>();
@@ -90,7 +96,8 @@ public class BM25
 	}
 	
 	/**
-	 * Load Queries hashmap from queries text file.
+	 * Load Queries hashmap from the given queries text file.
+	 * QueryId is assumed to start from 1.
 	 * @param queryFilePath
 	 * @throws IOException
 	 */
@@ -124,7 +131,8 @@ public class BM25
 	}
 	
 	/**
-	 * Compute K value
+	 * Compute K value based on the formula:
+	 * [k1*((1-b) + b*dl/avdl)]
 	 * @param dl
 	 * @return
 	 */
@@ -153,20 +161,24 @@ public class BM25
 	
 	/**
 	 * Main method to compute the doc score.
+	 * Here, each query is iterated and BM25 score is calculated for
+	 * each query term on all the documents.
+	 * 
 	 * @throws IOException 
 	 */
-	public static void computeDocScore(String resultsFilePath) throws IOException
+	public static void computeDocScore() throws IOException
 	{
-		BufferedWriter resultsFile = new BufferedWriter(new FileWriter(resultsFilePath));
 		double rankingScore = 0.0;
 		int N = docScore.size();
 		int dl = 0;
 		
 		Iterator<Integer> queryTerms = queries.keySet().iterator();
+		// Iterate each query
 		while(queryTerms.hasNext())
 		{
 			Integer queryId = queryTerms.next();
 			Iterator<String> docs = docLength.keySet().iterator();
+			// Iterate each document
 			while(docs.hasNext())
 			{
 				// Take one document.
@@ -176,19 +188,19 @@ public class BM25
 				dl = docLength.get(docId);
 				
 				Iterator<String> q = queries.get(queryId).keySet().iterator();
+				// Iterate each term term of this query.
 				while(q.hasNext())
 				{
 					String qi = q.next();
 					rankingScore += getBM25Score(queryId,docId, qi,dl,N);
 				}
-								
+				// Add the sum of ranking score for all the query terms in the query for the doc.
 				docScore.put(docId, rankingScore);
 			}
 			// DocScore for the query
-			writeTopRanked(queryId, resultsFile);
+			writeTopRanked(queryId);
 			docScore.clear();
 		}
-		resultsFile.close();
 	}
 	
 	/**
@@ -196,24 +208,30 @@ public class BM25
 	 * @param top
 	 * @throws IOException 
 	 */
-	public static void writeTopRanked(int queryId, BufferedWriter resultsFile) throws IOException
+	public static void writeTopRanked(int queryId) throws IOException
 	{
 		TreeMap<String, Double> sortedDocScore = SortByValue(docScore);
 		Iterator<String> docIds = sortedDocScore.keySet().iterator();
 		
 		int top = 1;
-		
+		// Write the top ranked documents in the output file.
 		while(docIds.hasNext() && top <= OUTPUT_THRESHOLD)
 		{
 			String docId = docIds.next();
-			resultsFile.write(queryId + " Q0 " + docId + " " + top + " " + 
-			docScore.get(docId) + " " + SYSTEM_NAME + "\n");
+			System.out.println(queryId + " Q0 " + docId + " " + top + " " + 
+			docScore.get(docId) + " " + SYSTEM_NAME);
 			top++;
 		}	
 	}
 	
 	/**
 	 * Compute the BM25 score per query term.
+	 * 
+	 * Assigned values:
+	 * k1 => 1.2 
+	 * k2 => 100
+	 * b =>  0.75
+	 * 
 	 * @param qid
 	 * @param docId
 	 * @param q
@@ -224,8 +242,11 @@ public class BM25
 	public static double getBM25Score(int qid, String docId, String q, int dl, int N)
 	{
 		double score;
+		// ni is the number of docs containing the given term.
 		double ni = index.get(q).keySet().size();
+		// The frequency of query term in the query.
 		double qfi = queries.get(qid).get(q);
+		// The frequency of query term in index.
 		double fi = 0;
 		if(null != index.get(q).get(docId))
 		{
@@ -252,17 +273,32 @@ public class BM25
 		return sortedMap;
 	}
 	
+	/**
+	 * Main method
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException 
 	{
+		// Default values of input.
 		String indexFileName = "index.out";
 		String docLengthFileName = "doclength.txt";
 		String queriesFileName = "queries.txt";
-		String resultsFileName = "results.eval";
+		OUTPUT_THRESHOLD = 100;
+		
+		// If arguments provided, pick those file names and threshold.
+		if(args.length == 3)
+		{
+			indexFileName = args[0];
+			queriesFileName = args[1];
+			OUTPUT_THRESHOLD = Integer.parseInt(args[2]);
+		}		
+		
 		loadIndex(indexFileName);
 		loadDocLength(docLengthFileName);
 		loadQueries(queriesFileName);
 		avdl = getAvdl();
-		computeDocScore(resultsFileName);
+		computeDocScore();
 	}
 }
 
