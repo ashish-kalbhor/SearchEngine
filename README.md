@@ -16,11 +16,12 @@ b. Run the Java file using "java".
 =========================================================================================
 PACKAGE INCLUDES
 =========================================================================================
-1. Source code (ir.search.indexer)
-2. Input file "tccorpus.txt" and "queries.txt"
+1. Source code (ir.search.indexer).
+2. Input file "tccorpus.txt" and "queries.txt".
 3. Requested output files:
 	1. index.out (Output of first program - Indexer)
 	2. results.eval (Output of second program - BM25)
+
 =========================================================================================
 Executing Indexer
 =========================================================================================
