@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Ashish/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/lib/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ashish/Downloads/jfreechart-1.0.19/jfreechart-1.0.19/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ashish/Documents/IR/Assignment 4 - Lucene/lucene-4.7.2/lucene-4.7.2/analysis/common/lucene-analyzers-common-4.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ashish/Documents/IR/Assignment 4 - Lucene/lucene-4.7.2/lucene-4.7.2/core/lucene-core-4.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ashish/Documents/IR/Assignment 4 - Lucene/lucene-4.7.2/lucene-4.7.2/queryparser/lucene-queryparser-4.7.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
