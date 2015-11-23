@@ -1,0 +1,34 @@
+************************
+3204 documents added.
+************************
+Enter the FULL path to add into the index (q=quit):(e.g. /home/mydir/docs or c:\Users\mydir\docs)
+[Acceptable file types: .xml, .html, .html, .txt]
+q
+Total number of Terms loaded =>11093
+
+Enter the search query (q=quit):
+portable operating systems
+
+Doc Hits for portable operating systems: 440
+portable operating systems: TermFrequency for each term: 924, DocFrequency for each term: 514
+
+Enter the search query (q=quit):
+code optimization for space efficiency
+
+Doc Hits for code optimization for space efficiency: 1579
+code optimization for space efficiency: TermFrequency for each term: 3727, DocFrequency for each term: 1860
+
+Enter the search query (q=quit):
+parallel algorithms
+
+Doc Hits for parallel algorithms: 272
+parallel algorithms: TermFrequency for each term: 523, DocFrequency for each term: 288
+
+Enter the search query (q=quit):
+parallel processor in information retrieval
+
+Doc Hits for parallel processor in information retrieval: 1529
+parallel processor in information retrieval: TermFrequency for each term: 4483, DocFrequency for each term: 1984
+
+Enter the search query (q=quit):
+q
